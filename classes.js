@@ -18,22 +18,24 @@ class Boundary {
 // ---------------------- Sprite Class - Image Class ----------------------
 
 class Sprite {
-    constructor({ position, velocity, image, frames = { max: 1 } }) {
+    constructor({ position, velocity, image, frames = { max: 1 }, sprites }) {
         this.position = position
         this.image = image
-        this.frames = frames // The background image has 1 frame, the player images have 4 frames
+        this.frames = {...frames, val: 0, elapsed: 0} // The background image has 1 frame, the player images have 4 frames (val is for what frame it should display, elapsed is amount of frames that have elapsed over time)
 
         this.image.onload = () => {
             this.width = this.image.width / this.frames.max
             this.height = this.image.height
         }
+        this.moving = false
+        this.sprites = sprites // Which image from up, down, left and right should be dispalyed
     }
 
     draw() {
         // Draw the image
         c.drawImage(
             this.image,
-            0, // X coordinate for the crop
+            this.frames.val * this.width, // X coordinate for the cro (0*48)
             0, // Y coordinate for the crop
             this.image.width / this.frames.max, // Crop width
             this.image.height, // Crop height
@@ -42,5 +44,17 @@ class Sprite {
             this.image.width / this.frames.max, // Width of the drawn image
             this.image.height // Height of the drawn image
         )
+
+        if(!this.moving) return
+        
+        if(this.frames.max > 1){
+            this.frames.elapsed++
+        }
+
+        if(this.frames.elapsed % 10 === 0){ // We devide it by 10 so we can slow the animation down
+            // Changing the players image frame that is displayed
+            if(this.frames.val < this.frames.max - 1) this.frames.val ++
+            else this.frames.val = 0
+        }
     }
 }
