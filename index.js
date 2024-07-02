@@ -14,9 +14,15 @@ for (let i = 0; i < collisions.length; i += 70) {
     collisionsMap.push(collisions.slice(i, i + 70))
 }
 
+const battleZonesMap = []
+for (let i = 0; i < battleZonesData.length; i += 70) {
+    battleZonesMap.push(battleZonesData.slice(i, i + 70))
+}
+
 // ------------------------- Create Boundaries -------------------------
 
 const boudaries = []
+const battleZones = []
 const offset = { // Offset values used for the background and collision blocks
     x: -865,
     y: -565
@@ -37,6 +43,22 @@ collisionsMap.forEach((row, i) => {
     })
 })
 
+battleZonesMap.forEach((row, i) => {
+    row.forEach((symbol, j) => {
+        if (symbol === 1025) {
+            battleZones.push(
+                new Boundary({
+                    position: {
+                        x: j * Boundary.width + offset.x,
+                        y: i * Boundary.height + offset.y
+                    }
+                })
+            )
+        }
+    })
+})
+
+console.log(battleZones);
 console.log(boudaries)
 
 // ----------------------------- Load Images -----------------------------
@@ -96,7 +118,7 @@ const foreground = new Sprite({ // Foreground image
     image: foregroundImage
 })
 
-// ------------------------- Player Movement -------------------------
+// ---------------------------- Player Movement ----------------------------
 
 const keys = { // Object to track key press states
     w: { pressed: false },
@@ -114,7 +136,7 @@ function rectangularCollision({ rectangle1, rectangle2 }) {
     )
 }
 
-const movables = [background, ...boudaries, foreground] // Array of objects that can be moved
+const movables = [background, ...boudaries, foreground, ...battleZones] // Array of objects that can be moved
 
 function animate() {
     window.requestAnimationFrame(animate) // Creating an infinite loop animation
@@ -124,8 +146,38 @@ function animate() {
     boudaries.forEach(boundary => {
         boundary.draw()
     })
+    battleZones.forEach(battleZone => {
+        battleZone.draw()
+    })
     player.draw()
     foreground.draw()
+
+    // Check for battle zones collision, when pressing on any moving keys
+    if(keys.w.pressed || keys.a.pressed || keys.s.pressed || keys.d.pressed){
+        for (let i = 0; i < battleZones.length; i++) {
+
+            const battleZone = battleZones[i]
+            // Calculating the overlaping area between the player and the battle zones
+            // (MIN of the right sides of both - MAX of the left sides of both) * (MIN of the bottom sides of both - MAX of the top sides of both)
+            const overlapingArea = (Math.min(player.position.x + player.width, battleZone.position.x + battleZone.width) - 
+            Math.max(player.position.x, battleZone.position.x)) *
+            (Math.min(player.position.y + player.height, battleZone.position.y + battleZone.height) - 
+            Math.max(player.position.y, battleZone.position.y))
+
+            // Detecting a battle zone collision only when the overlapping area is greater than half the player's area
+            // and matches the random factor which simulates battle initiation probability
+            if (rectangularCollision({
+                rectangle1: player,
+                rectangle2: battleZone
+                })  
+                && overlapingArea > (player.width * player.height) / 2 
+                && Math.random() < 0.02
+            ) {
+                console.log("Battle zone colliding")
+                break
+            }
+        }
+    }
 
     let moving = true
     player.moving = false
@@ -159,7 +211,7 @@ function animate() {
             movables.forEach(movable => {
                 movable.position.y += 3
             })
-        }
+        }        
     }
     else if (keys.a.pressed && lastKey === 'a') {
         player.moving = true
