@@ -81,6 +81,9 @@ playerLeftImage.src = './img/playerLeft.png'
 const foregroundImage = new Image()
 foregroundImage.src = './img/foregroundObjects.png'
 
+const battleBackgroundImage = new Image()
+battleBackgroundImage.src = './img/battleBackground.png'
+
 // ------------------------- Create Sprites - Create Images -------------------------
 
 const player = new Sprite({ // Player image
@@ -110,7 +113,6 @@ const background = new Sprite({ // Background image
 })
 
 const foreground = new Sprite({ // Foreground image
-    // Set background image x and y position
     position: {
         x: offset.x,
         y: offset.y
@@ -118,7 +120,14 @@ const foreground = new Sprite({ // Foreground image
     image: foregroundImage
 })
 
-// ---------------------------- Player Movement ----------------------------
+const battleBackground = new Sprite({ // Battle background image
+    position: {
+        x: 0,
+        y: 0
+    },
+    image: battleBackgroundImage
+})
+
 
 const keys = { // Object to track key press states
     w: { pressed: false },
@@ -127,7 +136,8 @@ const keys = { // Object to track key press states
     d: { pressed: false }
 }
 
-// Function to check for collision
+// ---------------------------- Collision detection ----------------------------
+
 function rectangularCollision({ rectangle1, rectangle2 }) {
     return (rectangle1.position.x + rectangle1.width >= rectangle2.position.x && // Left collision
         rectangle1.position.x <= rectangle2.position.x + rectangle2.width && // Right collision
@@ -138,9 +148,13 @@ function rectangularCollision({ rectangle1, rectangle2 }) {
 
 const movables = [background, ...boudaries, foreground, ...battleZones] // Array of objects that can be moved
 
-function animate() {
-    window.requestAnimationFrame(animate) // Creating an infinite loop animation
+const battle = {
+    initiated: false
+}
 
+function animate() {
+    const animationId = window.requestAnimationFrame(animate) // Creating an infinite loop animation
+    console.log(animationId);
     // Draw images
     background.draw()
     boudaries.forEach(boundary => {
@@ -151,6 +165,13 @@ function animate() {
     })
     player.draw()
     foreground.draw()
+
+    let moving = true
+    player.moving = false
+
+    //----------------------------- Activating a battle -----------------------------
+
+    if(battle.initiated) return
 
     // Check for battle zones collision, when pressing on any moving keys
     if(keys.w.pressed || keys.a.pressed || keys.s.pressed || keys.d.pressed){
@@ -173,14 +194,38 @@ function animate() {
                 && overlapingArea > (player.width * player.height) / 2 
                 && Math.random() < 0.02
             ) {
-                console.log("Battle zone colliding")
+                console.log("Activate a battle")
+                // Deactivate current animation loop
+                window.cancelAnimationFrame(animationId)
+                battle.initiated = true
+
+                // Making an animation for the battle scene transition
+                gsap.to('#overlappingDiv', {
+                    opacity: 1, // Fade in the element to full opacity
+                    repeat: 3, // Repeat the animation 3 times
+                    yoyo: true, // Reverse the animation direction every other time
+                    duration: 0.4, // Each animation lasts 0.4 seconds
+                    onComplete() { // Function to call when the animation completes
+                        gsap.to('#overlappingDiv', {
+                            opacity: 1, // Fade in the element to full opacity again
+                            duration: 0.4, // Animation lasts 0.4 seconds
+                            onComplete() { // Function to call when the animation completes
+                                // Activate a new animation loop
+                                animateBattle()
+                                gsap.to('#overlappingDiv', {
+                                    opacity: 0, // Fade out the element to no opacity
+                                    duration: 0.4, // Animation lasts 0.4 seconds
+                                })    
+                            }
+                        })                        
+                    }
+                })
                 break
             }
         }
     }
 
-    let moving = true
-    player.moving = false
+    // ---------------------------- Player Movement ----------------------------
     
     // Background movement based on key pressed states
     if (keys.w.pressed && lastKey === 'w') {
@@ -307,8 +352,17 @@ function animate() {
 
 animate()
 
+// ---------------------------- Battle animation ----------------------------
+
+function animateBattle(){
+    window.requestAnimationFrame(animateBattle)
+    console.log('animating battle');
+    battleBackground.draw()
+}
+
+// ---------------------------- Key Event Listeners ----------------------------
+
 let lastKey = ''
-// Event listener for keydown
 window.addEventListener("keydown", (e) => {
     switch (e.key) {
         case 'w':
@@ -334,7 +388,6 @@ window.addEventListener("keydown", (e) => {
     }
 })
 
-// Event listener for keyup
 window.addEventListener("keyup", (e) => {
     switch (e.key) {
         case 'w':
