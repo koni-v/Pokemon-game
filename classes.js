@@ -18,7 +18,7 @@ class Boundary {
 // ---------------------- Sprite Class - Image Class ----------------------
 
 class Sprite {
-    constructor({ position, velocity, image, frames = { max: 1 }, sprites }) {
+    constructor({ position, velocity, image, frames = { max: 1, hold: 10 }, sprites, animate }) {
         this.position = position
         this.image = image
         this.frames = {...frames, val: 0, elapsed: 0} // The background image has 1 frame, the player images have 4 frames (val is for what frame it should display, elapsed is amount of frames that have elapsed over time)
@@ -27,7 +27,7 @@ class Sprite {
             this.width = this.image.width / this.frames.max
             this.height = this.image.height
         }
-        this.moving = false
+        this.animate = animate
         this.sprites = sprites // Which image from up, down, left and right should be dispalyed
     }
 
@@ -45,13 +45,13 @@ class Sprite {
             this.image.height // Height of the drawn image
         )
 
-        if(!this.moving) return
+        if(!this.animate) return
         
         if(this.frames.max > 1){
             this.frames.elapsed++
         }
 
-        if(this.frames.elapsed % 10 === 0){ // We devide it by 10 so we can slow the animation down
+        if(this.frames.elapsed % this.frames.hold === 0){ // We devide it by 10 so we can slow the animation down
             // Changing the players image frame that is displayed
             if(this.frames.val < this.frames.max - 1) this.frames.val ++
             else this.frames.val = 0

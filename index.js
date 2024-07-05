@@ -4,7 +4,7 @@ const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d') // Canvas context - object responsible for drawing out everything we need for the game
 
 // Set canvas width and height
-canvas.width = 1240
+canvas.width = 1024
 canvas.height = 576
 
 // ------------------------- Collisions Mapping -------------------------
@@ -84,6 +84,12 @@ foregroundImage.src = './img/foregroundObjects.png'
 const battleBackgroundImage = new Image()
 battleBackgroundImage.src = './img/battleBackground.png'
 
+const dragonImage = new Image()
+dragonImage.src = './img/dragonSprite.png'
+
+const fireImage = new Image()
+fireImage.src = './img/fireSprite.png'
+
 // ------------------------- Create Sprites - Create Images -------------------------
 
 const player = new Sprite({ // Player image
@@ -93,7 +99,8 @@ const player = new Sprite({ // Player image
     },
     image: playerDownImage,
     frames: {
-        max: 4
+        max: 4,
+        hold: 10
     },
     sprites: {
         down: playerDownImage,
@@ -126,6 +133,32 @@ const battleBackground = new Sprite({ // Battle background image
         y: 0
     },
     image: battleBackgroundImage
+})
+
+const dragon = new Sprite({ // Dragon image
+    position: {
+        x: 800,
+        y: 100
+    },
+    image: dragonImage,
+    frames: {
+        max: 4,
+        hold: 30
+    },
+    animate: true
+})
+
+const fire = new Sprite({ // Fire image
+    position: {
+        x: 280,
+        y: 325
+    },
+    image: fireImage,
+    frames: {
+        max: 4,
+        hold: 30
+    },
+    animate: true
 })
 
 
@@ -167,7 +200,7 @@ function animate() {
     foreground.draw()
 
     let moving = true
-    player.moving = false
+    player.animate = false
 
     //----------------------------- Activating a battle -----------------------------
 
@@ -229,7 +262,7 @@ function animate() {
     
     // Background movement based on key pressed states
     if (keys.w.pressed && lastKey === 'w') {
-        player.moving = true
+        player.animate = true
         player.image = player.sprites.up
 
         for (let i = 0; i < boudaries.length; i++) {
@@ -259,7 +292,7 @@ function animate() {
         }        
     }
     else if (keys.a.pressed && lastKey === 'a') {
-        player.moving = true
+        player.animate = true
         player.image = player.sprites.left
 
         for (let i = 0; i < boudaries.length; i++) {
@@ -289,7 +322,7 @@ function animate() {
         }
     }
     else if (keys.s.pressed && lastKey === 's') {
-        player.moving = true
+        player.animate = true
         player.image = player.sprites.down
 
         for (let i = 0; i < boudaries.length; i++) {
@@ -319,7 +352,7 @@ function animate() {
         }
     }
     else if (keys.d.pressed && lastKey === 'd') {
-        player.moving = true
+        player.animate = true
         player.image = player.sprites.right
 
         for (let i = 0; i < boudaries.length; i++) {
@@ -350,7 +383,7 @@ function animate() {
     }
 }
 
-animate()
+//animate()
 
 // ---------------------------- Battle animation ----------------------------
 
@@ -358,7 +391,11 @@ function animateBattle(){
     window.requestAnimationFrame(animateBattle)
     console.log('animating battle');
     battleBackground.draw()
+    dragon.draw()
+    fire.draw()
 }
+
+animateBattle()
 
 // ---------------------------- Key Event Listeners ----------------------------
 
