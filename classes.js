@@ -25,7 +25,6 @@ class Sprite {
         frames = { max: 1, hold: 10 }, 
         sprites, 
         animate = false, 
-        isEnemy = false, 
         rotation = 0 }) {
         this.position = position
         this.image = image
@@ -38,8 +37,6 @@ class Sprite {
         this.animate = animate
         this.sprites = sprites // Which image from up, down, left and right should be dispalyed
         this.opacity = 1
-        this.health = 100
-        this.isEnemy = isEnemy
         this.rotation = rotation // Rotation of the fireball sprite
     }
 
@@ -51,7 +48,8 @@ class Sprite {
         c.translate(-this.position.x - this.width / 2, 
                     -this.position.y - this.height / 2)
         c.globalAlpha = this.opacity // Set the opacity for the drawing operation
-        // Draw the image
+        
+        // Draw function
         c.drawImage(
             this.image,
             this.frames.val * this.width, // X coordinate for the cro (0*48)
@@ -77,21 +75,57 @@ class Sprite {
             else this.frames.val = 0
         }
     }
+}
 
+// --------------------------- Monster Class --------------------------
+class Monster extends Sprite {
+    constructor({
+        position, 
+        velocity, 
+        image, 
+        frames = { max: 1, hold: 10 }, 
+        sprites, 
+        animate = false, 
+        rotation = 0, 
+        isEnemy = false, 
+        name,
+        attacks
+    }){
+        super({
+            position, 
+            velocity, 
+            image, 
+            frames, 
+            sprites, 
+            animate, 
+            rotation
+        })
+        this.health = 100
+        this.isEnemy = isEnemy
+        this.name = name // Name of the sprite
+        this.attacks = attacks
+    }
+
+    // Attack function
     attack({attack, recipient, renderedSprites}){
-        this.health -= attack.damage
-
+        let dialogueBox = document.querySelector('#dialogue-box')
+        dialogueBox.style.display = 'block'
+        dialogueBox.innerHTML = this.name + " used " + attack.name
+        
         let movementDirection = 20
         let healthBar = '#dragon-health-bar-current'
         let rotation = 1
-
+        
         if(this.isEnemy) {
             movementDirection = -20
             healthBar = '#fire-health-bar-current'
             rotation = -2.2
         }
+        
+        recipient.health -= attack.damage
 
         switch(attack.name){
+            // ------------------------- Tackle attack -------------------------
             case "Tackle":
                 const tl = gsap.timeline()
 
@@ -102,7 +136,7 @@ class Sprite {
                     duration: 0.1,
                     onComplete: () => { // After the attackers second move, animate the hit of the recipient
                         gsap.to(healthBar, { // Subtrackt from the recipient's health bar
-                            width: this.health - attack.damage + '%'
+                            width: recipient.health + '%'
                         })
                         
                         gsap.to(recipient.position, { // Move the recipient 10px to the right and left 5 times with a duration od 0.08
@@ -125,6 +159,7 @@ class Sprite {
                 break
             
 
+            // ------------------------- Fireball attack -------------------------
             case "Fireball":
                 fireBall.position = { // Set the fireball's starting position as the fire's start postiton
                     x: this.position.x,
@@ -140,7 +175,7 @@ class Sprite {
                     y: recipient.position.y,
                     onComplete: () => { // Remove the fireball sprite when it reaches the dragon
                         gsap.to(healthBar, { // Subtrackt from the recipient's health bar
-                            width: this.health - attack.damage + '%'
+                            width: recipient.health + '%'
                         })
                         
                         gsap.to(recipient.position, { // Move the recipient 10px to the right and left 5 times with a duration od 0.08
@@ -161,5 +196,18 @@ class Sprite {
                 })
                 break
         }
+    }
+
+    // Faint function
+    faint() {
+        let dialogueBox = document.querySelector('#dialogue-box')
+        dialogueBox.innerHTML = this.name + " fainted"
+        gsap.to(this.position, {
+            y: this.position.y + 20
+        })
+        gsap.to(this, {
+            opacity: 0
+        })
+        console.log('faint');
     }
 }

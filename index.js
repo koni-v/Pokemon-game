@@ -58,8 +58,8 @@ battleZonesMap.forEach((row, i) => {
     })
 })
 
-console.log(battleZones);
-console.log(boudaries)
+// console.log(battleZones);
+// console.log(boudaries)
 
 // ----------------------------- Load Images -----------------------------
 
@@ -80,18 +80,6 @@ playerLeftImage.src = './img/playerLeft.png'
 
 const foregroundImage = new Image()
 foregroundImage.src = './img/foregroundObjects.png'
-
-const battleBackgroundImage = new Image()
-battleBackgroundImage.src = './img/battleBackground.png'
-
-const dragonImage = new Image()
-dragonImage.src = './img/dragonSprite.png'
-
-const fireImage = new Image()
-fireImage.src = './img/fireSprite.png'
-
-const fireBallImage = new Image()
-fireBallImage.src = './img/fireball.png'
 
 // ------------------------- Create Sprites - Create Images -------------------------
 
@@ -130,55 +118,6 @@ const foreground = new Sprite({ // Foreground image
     image: foregroundImage
 })
 
-const battleBackground = new Sprite({ // Battle background image
-    position: {
-        x: 0,
-        y: 0
-    },
-    image: battleBackgroundImage
-})
-
-const dragon = new Sprite({ // Dragon image
-    position: {
-        x: 800,
-        y: 100
-    },
-    image: dragonImage,
-    frames: {
-        max: 4,
-        hold: 30
-    },
-    animate: true,
-    isEnemy: true
-})
-
-const fire = new Sprite({ // Fire image
-    position: {
-        x: 280,
-        y: 325
-    },
-    image: fireImage,
-    frames: {
-        max: 4,
-        hold: 30
-    },
-    animate: true
-})
-
-const fireBall = new Sprite({ // Fireball image
-    position: {
-        x: 0,
-        y: 0
-    },
-    image: fireBallImage,
-    frames: {
-        max: 4,
-        hold: 10 
-    },
-    animate: true,
-})
-
-
 const keys = { // Object to track key press states
     w: { pressed: false },
     a: { pressed: false },
@@ -204,7 +143,7 @@ const battle = {
 
 function animate() {
     const animationId = window.requestAnimationFrame(animate) // Creating an infinite loop animation
-    console.log(animationId);
+    //console.log(animationId);
     // Draw images
     background.draw()
     boudaries.forEach(boundary => {
@@ -402,35 +341,6 @@ function animate() {
 
 //animate()
 
-// ---------------------------- Battle animation ----------------------------
-
-const renderedSprites = [dragon, fire]
-
-function animateBattle(){
-    window.requestAnimationFrame(animateBattle)
-    console.log('animating battle');
-    battleBackground.draw()
-
-    renderedSprites.forEach((sprite) => {
-        sprite.draw()
-    })
-}
-
-animateBattle()
-
-//------------------ Event listeners for our buttons (attacks) ------------------
-
-document.querySelectorAll("button").forEach((button) => {
-    button.addEventListener("click", (e) => {
-        const selectedAttack = attacks[e.currentTarget.innerHTML]
-        fire.attack({
-            attack: selectedAttack,
-            recipient: dragon,
-            renderedSprites
-        })
-        
-    })
-})
 // ---------------------------- Key Event Listeners ----------------------------
 
 let lastKey = ''

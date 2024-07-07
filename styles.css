@@ -112,3 +112,15 @@ button:hover{
     left: 0;
     right: 0;
 }
+
+#dialogue-box{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    padding: 12px;
+    display: none;
+    cursor: pointer;
+}
