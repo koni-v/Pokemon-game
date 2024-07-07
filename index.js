@@ -90,6 +90,9 @@ dragonImage.src = './img/dragonSprite.png'
 const fireImage = new Image()
 fireImage.src = './img/fireSprite.png'
 
+const fireBallImage = new Image()
+fireBallImage.src = './img/fireball.png'
+
 // ------------------------- Create Sprites - Create Images -------------------------
 
 const player = new Sprite({ // Player image
@@ -145,7 +148,8 @@ const dragon = new Sprite({ // Dragon image
         max: 4,
         hold: 30
     },
-    animate: true
+    animate: true,
+    isEnemy: true
 })
 
 const fire = new Sprite({ // Fire image
@@ -159,6 +163,19 @@ const fire = new Sprite({ // Fire image
         hold: 30
     },
     animate: true
+})
+
+const fireBall = new Sprite({ // Fireball image
+    position: {
+        x: 0,
+        y: 0
+    },
+    image: fireBallImage,
+    frames: {
+        max: 4,
+        hold: 10 
+    },
+    animate: true,
 })
 
 
@@ -387,16 +404,33 @@ function animate() {
 
 // ---------------------------- Battle animation ----------------------------
 
+const renderedSprites = [dragon, fire]
+
 function animateBattle(){
     window.requestAnimationFrame(animateBattle)
     console.log('animating battle');
     battleBackground.draw()
-    dragon.draw()
-    fire.draw()
+
+    renderedSprites.forEach((sprite) => {
+        sprite.draw()
+    })
 }
 
 animateBattle()
 
+//------------------ Event listeners for our buttons (attacks) ------------------
+
+document.querySelectorAll("button").forEach((button) => {
+    button.addEventListener("click", (e) => {
+        const selectedAttack = attacks[e.currentTarget.innerHTML]
+        fire.attack({
+            attack: selectedAttack,
+            recipient: dragon,
+            renderedSprites
+        })
+        
+    })
+})
 // ---------------------------- Key Event Listeners ----------------------------
 
 let lastKey = ''

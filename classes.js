@@ -18,7 +18,15 @@ class Boundary {
 // ---------------------- Sprite Class - Image Class ----------------------
 
 class Sprite {
-    constructor({ position, velocity, image, frames = { max: 1, hold: 10 }, sprites, animate }) {
+    constructor({ 
+        position, 
+        velocity, 
+        image, 
+        frames = { max: 1, hold: 10 }, 
+        sprites, 
+        animate = false, 
+        isEnemy = false, 
+        rotation = 0 }) {
         this.position = position
         this.image = image
         this.frames = {...frames, val: 0, elapsed: 0} // The background image has 1 frame, the player images have 4 frames (val is for what frame it should display, elapsed is amount of frames that have elapsed over time)
@@ -29,9 +37,20 @@ class Sprite {
         }
         this.animate = animate
         this.sprites = sprites // Which image from up, down, left and right should be dispalyed
+        this.opacity = 1
+        this.health = 100
+        this.isEnemy = isEnemy
+        this.rotation = rotation // Rotation of the fireball sprite
     }
 
     draw() {
+        c.save() // Save the current canvas state
+        c.translate(this.position.x + this.width / 2, 
+                    this.position.y + this.height / 2)
+        c.rotate(this.rotation)
+        c.translate(-this.position.x - this.width / 2, 
+                    -this.position.y - this.height / 2)
+        c.globalAlpha = this.opacity // Set the opacity for the drawing operation
         // Draw the image
         c.drawImage(
             this.image,
@@ -44,6 +63,7 @@ class Sprite {
             this.image.width / this.frames.max, // Width of the drawn image
             this.image.height // Height of the drawn image
         )
+        c.restore() // Restore the canvas state to what it was before the save()
 
         if(!this.animate) return
         
@@ -55,6 +75,91 @@ class Sprite {
             // Changing the players image frame that is displayed
             if(this.frames.val < this.frames.max - 1) this.frames.val ++
             else this.frames.val = 0
+        }
+    }
+
+    attack({attack, recipient, renderedSprites}){
+        this.health -= attack.damage
+
+        let movementDirection = 20
+        let healthBar = '#dragon-health-bar-current'
+        let rotation = 1
+
+        if(this.isEnemy) {
+            movementDirection = -20
+            healthBar = '#fire-health-bar-current'
+            rotation = -2.2
+        }
+
+        switch(attack.name){
+            case "Tackle":
+                const tl = gsap.timeline()
+
+                tl.to(this.position, { // Move the attacker 20 px to the left
+                    x: this.position.x - movementDirection
+                }).to(this.position, { // Move the attacker 40 px to the right
+                    x: this.position.x + movementDirection*2,
+                    duration: 0.1,
+                    onComplete: () => { // After the attackers second move, animate the hit of the recipient
+                        gsap.to(healthBar, { // Subtrackt from the recipient's health bar
+                            width: this.health - attack.damage + '%'
+                        })
+                        
+                        gsap.to(recipient.position, { // Move the recipient 10px to the right and left 5 times with a duration od 0.08
+                            x: recipient.position.x + 10,
+                            yoyo: true,
+                            repeat: 5,
+                            duration: 0.08,
+                        })
+
+                        gsap.to(recipient, { // Fade the recipient's opacity to 0 5 times
+                            opacity: 0,
+                            yoyo: true,
+                            repeat: 5,
+                            duration: 0.08
+                        })
+                    }
+                }).to(this.position, { // Move the attacker to it's original position
+                    x: this.position.x
+                })
+                break
+            
+
+            case "Fireball":
+                fireBall.position = { // Set the fireball's starting position as the fire's start postiton
+                    x: this.position.x,
+                    y: this.position.y
+                }
+
+                fireBall.rotation = rotation
+
+                renderedSprites.splice(1, 0, fireBall) // Placing the fireball sprite aftre the fire and before the dragon sprite
+
+                gsap.to(fireBall.position, { // Move the fireball from the fire to the dragon
+                    x: recipient.position.x,
+                    y: recipient.position.y,
+                    onComplete: () => { // Remove the fireball sprite when it reaches the dragon
+                        gsap.to(healthBar, { // Subtrackt from the recipient's health bar
+                            width: this.health - attack.damage + '%'
+                        })
+                        
+                        gsap.to(recipient.position, { // Move the recipient 10px to the right and left 5 times with a duration od 0.08
+                            x: recipient.position.x + 10,
+                            yoyo: true,
+                            repeat: 5,
+                            duration: 0.08,
+                        })
+
+                        gsap.to(recipient, { // Fade the recipient's opacity to 0 5 times
+                            opacity: 0,
+                            yoyo: true,
+                            repeat: 5,
+                            duration: 0.08
+                        })
+                        renderedSprites.splice(1, 1) // Removing the fireball sprite
+                    }
+                })
+                break
         }
     }
 }

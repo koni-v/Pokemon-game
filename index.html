@@ -12,8 +12,8 @@
 <body>
     <div class="canvas-container">
         <div id="overlappingDiv"></div>
-        
-        <!-- Health bar of dragon -->
+
+        <!-- Health bar of dragon (enemy) -->
         <div id="dragon-box">
             <h1>Dragon</h1>
             <div style="position: relative;">
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <!-- Health bar of fire -->
+        <!-- Health bar of fire (player) -->
         <div id="fire-box">
             <h1>Fire</h1>
             <div style="position: relative;">
@@ -34,10 +34,8 @@
         <canvas></canvas>
         <div class="attack-bar">
             <div id="left-attack-div">
-                <button>Attack 1</button>
-                <button>Attack 2</button>
-                <button>Attack 3</button>
-                <button>Attack 4</button>
+                <button id="tackle-btn">Tackle</button>
+                <button id="btn">Fireball</button>
             </div>
             <div id="right-attack-div">
                 <h1>Attack Type</h1>
@@ -45,6 +43,7 @@
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> <!-- gsap - js library for creating animations -->
+    <script src="data/attacks.js"></script>
     <script src="data/battleZones.js"></script>
     <script src="data/collisions.js"></script>
     <script src="classes.js"></script>
