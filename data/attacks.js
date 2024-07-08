@@ -1,3 +1,5 @@
+// ----------------------------- Attacks Object -----------------------------
+// Define the different types of attacks available in the game
 const attacks = {
     Tackle: {
         name: 'Tackle',

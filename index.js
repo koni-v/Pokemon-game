@@ -143,7 +143,7 @@ const battle = {
 
 function animate() {
     const animationId = window.requestAnimationFrame(animate) // Creating an infinite loop animation
-    //console.log(animationId);
+    
     // Draw images
     background.draw()
     boudaries.forEach(boundary => {
@@ -162,7 +162,7 @@ function animate() {
 
     if(battle.initiated) return
 
-    // Check for battle zones collision, when pressing on any moving keys
+    // Check for battle zones collision, when keys are pressed
     if(keys.w.pressed || keys.a.pressed || keys.s.pressed || keys.d.pressed){
         for (let i = 0; i < battleZones.length; i++) {
 
@@ -187,6 +187,9 @@ function animate() {
                 // Deactivate current animation loop
                 window.cancelAnimationFrame(animationId)
                 battle.initiated = true
+                audio.Map.stop()
+                audio.InitBattle.play()
+                audio.Battle.play()
 
                 // Making an animation for the battle scene transition
                 gsap.to('#overlappingDiv', {
@@ -388,5 +391,15 @@ window.addEventListener("keyup", (e) => {
             keys.d.pressed = false
             break
 
+    }
+})
+
+// ----------------------------- Play Map Music -----------------------------
+
+let clicked = false
+addEventListener('click', () => {
+    if(!clicked){
+        audio.Map.play()
+        clicked = true
     }
 })

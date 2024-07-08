@@ -1,11 +1,13 @@
+// ----------------- Load images for monsters ------------------
 const fireImage = new Image()
 fireImage.src = './img/fireSprite.png'
 
 const dragonImage = new Image()
 dragonImage.src = './img/dragonSprite.png'
 
+// ------------------------ Monster object ------------------------
 const monsters = {
-    Fire: { // Fire image
+    Fire: { // Fire monster
         position: {
             x: 280,
             y: 325
@@ -21,7 +23,7 @@ const monsters = {
         name: "Fire",
         attacks: [attacks.Tackle, attacks.Fireball]
     },
-    Dragon: { // Dragon image
+    Dragon: { // Dragon monster
         position: {
             x: 800,
             y: 100
