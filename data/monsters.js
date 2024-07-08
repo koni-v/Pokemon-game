@@ -10,7 +10,9 @@ const monsters = {
             x: 280,
             y: 325
         },
-        image: fireImage,
+        image: {
+            src: './img/fireSprite.png'
+        },
         frames: {
             max: 4,
             hold: 30
@@ -24,7 +26,9 @@ const monsters = {
             x: 800,
             y: 100
         },
-        image: dragonImage,
+        image: {
+            src: './img/dragonSprite.png'
+        },
         frames: {
             max: 4,
             hold: 30

@@ -200,6 +200,7 @@ function animate() {
                             duration: 0.4, // Animation lasts 0.4 seconds
                             onComplete() { // Function to call when the animation completes
                                 // Activate a new animation loop
+                                initBattle()
                                 animateBattle()
                                 gsap.to('#overlappingDiv', {
                                     opacity: 0, // Fade out the element to no opacity
