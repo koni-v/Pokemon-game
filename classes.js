@@ -29,10 +29,15 @@ class Sprite {
         this.position = position
         this.image = new Image()
         this.frames = {...frames, val: 0, elapsed: 0} // The background image has 1 frame, the player images have 4 frames (val is for what frame it should display, elapsed is amount of frames that have elapsed over time)
+        this.loaded = false
         this.image.onload = () => {
             this.width = this.image.width / this.frames.max
             this.height = this.image.height
+            this.loaded = true
         }
+        this.image.onerror = () => {
+            console.error("Error loading image:", image.src);
+        };
         this.image.src = image.src
         this.animate = animate // Wheather it should loop through all the frames od the image, making an animation
         this.sprites = sprites // Which image from up, down, left and right should be dispalyed
@@ -41,6 +46,7 @@ class Sprite {
     }
 
     draw() {
+        if (!this.loaded) return;
         c.save() // Save the current canvas state
         c.translate(this.position.x + this.width / 2, 
                     this.position.y + this.height / 2) // Translate canvas origin

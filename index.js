@@ -64,7 +64,7 @@ battleZonesMap.forEach((row, i) => {
 // ----------------------------- Load Images -----------------------------
 
 const backgroundImage = new Image()
-backgroundImage.src = './img/pallet Town.png'
+backgroundImage.src = './img/palletTown.png'
 
 const playerDownImage = new Image()
 playerDownImage.src = './img/playerDown.png'

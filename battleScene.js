@@ -141,7 +141,7 @@ function initBattle(){
 function animateBattle(){
     battleaAnimationId = window.requestAnimationFrame(animateBattle)
     //console.log('animating battle');
-    console.log(battleaAnimationId);
+    // console.log(battleaAnimationId);
     battleBackground.draw()
 
     renderedSprites.forEach((sprite) => {
